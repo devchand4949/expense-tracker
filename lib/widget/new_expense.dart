@@ -74,7 +74,7 @@ class _NewExpenseState extends State<NewExpense> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(horizontal: 16,vertical: 50),
       child: Column(
         children: [
           //Title input

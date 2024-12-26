@@ -11,6 +11,7 @@ var kDarkcolorSchema = ColorScheme.fromSeed(
 
 void main() {
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     //use theame when your phone is dark mode
     darkTheme: ThemeData.dark().copyWith(
         useMaterial3: true,

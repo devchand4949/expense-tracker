@@ -81,6 +81,7 @@ class _ExpensesState extends State<Expenses> {
     // 2) create build method and add scaffold 3->expense screen
     return Scaffold(
       appBar: AppBar(
+        title: Text('Expense Tracker'),
         actions: [
           IconButton(
             onPressed: _openAddExpenseOverlay,
