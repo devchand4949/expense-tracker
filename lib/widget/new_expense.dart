@@ -3,6 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:expense_tracker/model/expense.dart';
 
 class NewExpense extends StatefulWidget {
+  const NewExpense({super.key, required this.onAddExpense});
+
+  final void Function(Expense expense) onAddExpense;
+
   @override
   State<NewExpense> createState() {
     return _NewExpenseState();
@@ -13,6 +17,8 @@ class _NewExpenseState extends State<NewExpense> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
   DateTime? _selectedDate;
+  Category _selectedCategory = Category.work;
+
 // for date
   void _presentDatePicker() async {
     final now = DateTime.now();
@@ -25,6 +31,37 @@ class _NewExpenseState extends State<NewExpense> {
     setState(() {
       _selectedDate = pickDate;
     });
+  }
+
+  //submit data using validation
+  void _submitExpenseData() {
+    final enteredAmount = double.tryParse(_amountController.text);
+    final amountIsInvalid = enteredAmount == null || enteredAmount < 0;
+    if (_titleController.text.trim().isEmpty ||
+        amountIsInvalid ||
+        _selectedDate == null) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text("Invalid Input"),
+                content: Text(
+                    "please make sure a valid title,amount,date and category was entered."),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Okey'))
+                ],
+              ));
+      return;
+    }
+    widget.onAddExpense(Expense(
+        title: _titleController.text,
+        amout: enteredAmount,
+        date: _selectedDate!,
+        category: _selectedCategory));
+    Navigator.pop(context);
   }
 
   @override
@@ -80,11 +117,30 @@ class _NewExpenseState extends State<NewExpense> {
               )
             ],
           ),
-
-
-          // close button
+          const SizedBox(
+            height: 16,
+          ),
+          // close button row
           Row(
             children: [
+              DropdownButton(
+                  value: _selectedCategory,
+                  items: Category.values
+                      .map((category) => DropdownMenuItem(
+                          value: category,
+                          child: Text(
+                            category.name.toUpperCase(),
+                          )))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) {
+                      return;
+                    }
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  }),
+              Spacer(),
               TextButton(
                 // close bottom screen
                 onPressed: () {
@@ -93,11 +149,7 @@ class _NewExpenseState extends State<NewExpense> {
                 child: Text('Close'),
               ),
               ElevatedButton(
-                  onPressed: () {
-                    print(_titleController.text);
-                    print(_amountController.text);
-                  },
-                  child: Text('get value'))
+                  onPressed: _submitExpenseData, child: Text('Save Expense'))
             ],
           )
         ],

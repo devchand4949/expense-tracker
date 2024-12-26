@@ -27,7 +27,18 @@ class _ExpensesState extends State<Expenses> {
   ];
   void _openAddExpenseOverlay() {
     //NewExpense is widget you can watch new_expense screen
-    showModalBottomSheet(context: context, builder: (context) => NewExpense());
+    showModalBottomSheet(
+      isScrollControlled: true,//open full screen
+        context: context,
+        builder: (context) => NewExpense(
+              onAddExpense: _addExpense,
+            ));
+  }
+
+  void _addExpense(Expense expense) {
+    setState(() {
+      _registeredExpenses.add(expense); //add data in register List
+    });
   }
 
   @override
@@ -45,7 +56,10 @@ class _ExpensesState extends State<Expenses> {
       body: Column(
         children: [
           Text("The chart"),
-          Expanded(child: ExpensesList(expenses: _registeredExpenses))
+          Expanded(
+              child: ExpensesList(
+                  expenses:
+                      _registeredExpenses)) //register expense is a list when add data
         ],
       ),
     );
