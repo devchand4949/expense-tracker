@@ -29,6 +29,7 @@ class _ExpensesState extends State<Expenses> {
   void _openAddExpenseOverlay() {
     //NewExpense is widget you can watch new_expense screen
     showModalBottomSheet(
+      useSafeArea: true,//using safe area
         isScrollControlled: true, //open full screen
         context: context,
         builder: (context) => NewExpense(
@@ -53,20 +54,23 @@ class _ExpensesState extends State<Expenses> {
     //fast snakbar show then i remove data then immediately show snakbar
     ScaffoldMessenger.of(context).clearSnackBars();
     //show snakbar message bottom and undo retrive data
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       duration: const Duration(seconds: 3),
-        content: const Text('Text deleted.'),
-        action:SnackBarAction(label: 'Undo', onPressed: (){
-          setState(() {
-            _registeredExpenses.insert(expenseIndex, expense);
-          });
-    }),
+      content: const Text('Text deleted.'),
+      action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            setState(() {
+              _registeredExpenses.insert(expenseIndex, expense);
+            });
+          }),
     ));
   }
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     Widget mainContent = const Center(
       child: Text('No expenses found. Start adding some!'),
     );
@@ -89,13 +93,23 @@ class _ExpensesState extends State<Expenses> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          Chart(expenses: _registeredExpenses),
-          Expanded(child: mainContent // call mainContent widget (uper che)
-              ),
-        ],
-      ),
+      body: width < 600
+          ? Column(
+              children: [
+                Chart(expenses: _registeredExpenses),
+                Expanded(
+                    child: mainContent // call mainContent widget (uper che)
+                    ),
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(child: Chart(expenses: _registeredExpenses)),
+                Expanded(
+                    child: mainContent // call mainContent widget (uper che)
+                    ),
+              ],
+            ),
     );
   }
 }
